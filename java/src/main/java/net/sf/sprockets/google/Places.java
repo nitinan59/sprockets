@@ -447,6 +447,24 @@ public class Places {
 	 */
 	private static PlacesResponse places(Request type, Params params, Field[] fields)
 			throws IOException {
+		int maxResult = params.mMaxResults;
+		double round = maxResult/20.0;
+		round = Math.ceil(round);
+		PlacesResponse response = null;
+		for(int i = 1;i<=round;i++){
+			PlacesResponse tmp = computePlaces(type, params, fields);
+			if(response==null){
+				response = tmp;
+			}else{
+				response.mResult.addAll(tmp.mResult);
+			}
+			params.pageToken(tmp.mToken);
+		}
+		return response;
+	}
+	
+	private static PlacesResponse computePlaces(Request type, Params params, Field[] fields)
+			throws IOException {
 		JsonReader in = reader(params.format(type));
 		try {
 			return new PlacesResponse(in, Field.bits(fields), params.mMaxResults);
@@ -459,6 +477,24 @@ public class Places {
 	 * Get predictions for the request.
 	 */
 	private static PredictionsResponse predictions(Request type, Params params, Field[] fields)
+			throws IOException {
+		int maxResult = params.mMaxResults;
+		double round = maxResult/20.0;
+		round = Math.ceil(round);
+		PredictionsResponse response = null;
+		for(int i = 1;i<=round;i++){
+			PredictionsResponse tmp = computePredictions(type, params, fields);
+			if(response==null){
+				response = tmp;
+			}else{
+				response.mResult.addAll(tmp.mResult);
+			}
+			params.pageToken(tmp.mToken);
+		}
+		return response;
+	}
+	
+	private static PredictionsResponse computePredictions(Request type, Params params, Field[] fields)
 			throws IOException {
 		JsonReader in = reader(params.format(type));
 		try {
